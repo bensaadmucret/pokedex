@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 #[Autoconfigure(tags: ['app.pokemon_fetcher'])]
 class PokemonFetcher
 {
-    private const TOTAL_POKEMONS = 1008;
+    private const TOTAL_POKEMONS = 100;
 
     public function __construct(
         private readonly PokemonApiClient $apiClient,
