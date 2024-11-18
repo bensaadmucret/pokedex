@@ -49,7 +49,7 @@ class PokemonService
             ->setBaseExperience($dto->baseExperience)
             ->setHeight($dto->height)
             ->setIsDefault($dto->isDefault)
-            ->setOrder($dto->order)
+            ->setPokemonOrder($dto->pokemonOrder)
             ->setWeight($dto->weight)
             ->setAbilities($dto->abilities)
             ->setForms($dto->forms)

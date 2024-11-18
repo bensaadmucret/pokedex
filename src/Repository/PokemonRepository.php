@@ -21,7 +21,25 @@ class PokemonRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Pokemon::class);
-    } 
+    }
+    
+    public function save(Pokemon $pokemon, bool $flush = false): void
+    {
+        $this->getEntityManager()->persist($pokemon);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
+
+    public function remove(Pokemon $pokemon, bool $flush = false): void
+    {
+        $this->getEntityManager()->remove($pokemon);
+
+        if ($flush) {
+            $this->getEntityManager()->flush();
+        }
+    }
 
     public function createFilteredQueryBuilder(
         ?string $search = null,

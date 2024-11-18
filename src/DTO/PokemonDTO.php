@@ -39,7 +39,7 @@ readonly class PokemonDTO
         #[Assert\NotNull]
         #[Assert\Type('integer')]
         #[Assert\PositiveOrZero]
-        public int $order,
+        public int $pokemonOrder,
 
         #[Assert\NotNull]
         #[Assert\Type('integer')]
@@ -93,7 +93,13 @@ readonly class PokemonDTO
         #[Assert\NotNull]
         #[Assert\Type('array')]
         #[Assert\Valid]
-        public array $types
+        public array $types,
+
+        #[Assert\NotNull]
+        #[Assert\Type('array')]
+        #[Assert\Valid]
+        #[SerializedName('sprites')]
+        public array $sprites,
     ) {
     }
 
@@ -105,7 +111,7 @@ readonly class PokemonDTO
             baseExperience: $data['base_experience'],
             height: $data['height'],
             isDefault: $data['is_default'],
-            order: $data['order'],
+            pokemonOrder: $data['order'],
             weight: $data['weight'],
             abilities: $data['abilities'],
             forms: $data['forms'],
@@ -115,7 +121,8 @@ readonly class PokemonDTO
             moves: $data['moves'],
             pastTypes: $data['past_types'],
             stats: $data['stats'],
-            types: $data['types']
+            types: $data['types'],
+            sprites: $data['sprites'] ?? []
         );
     }
 }

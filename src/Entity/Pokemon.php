@@ -31,7 +31,7 @@ class Pokemon
     private bool $isDefault;
 
     #[ORM\Column(type: Types::INTEGER)]
-    private int $order;
+    private int $pokemonOrder; 
 
     #[ORM\Column(type: Types::INTEGER)]
     private int $weight;
@@ -62,6 +62,9 @@ class Pokemon
 
     #[ORM\Column(type: Types::JSON)]
     private array $types = [];
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $sprites = [];
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $updatedAt;
@@ -121,15 +124,15 @@ class Pokemon
         $this->isDefault = $isDefault;
         return $this;
     }
-
-    public function getOrder(): int
+    
+    public function getPokemonOrder(): int
     {
-        return $this->order;
+        return $this->pokemonOrder;
     }
 
-    public function setOrder(int $order): self
+    public function setPokemonOrder(int $pokemonOrder): self
     {
-        $this->order = $order;
+        $this->pokemonOrder = $pokemonOrder;
         return $this;
     }
 
@@ -242,6 +245,18 @@ class Pokemon
         $this->types = $types;
         return $this;
     }
+
+    public function getSprites(): array
+    {
+        return $this->sprites;
+    }
+
+    public function setSprites(array $sprites): self
+    {
+        $this->sprites = $sprites;
+        return $this;
+    }
+
 
     public function getUpdatedAt(): \DateTimeImmutable
     {
