@@ -1,23 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
-use App\Service\PokemonService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
-#[Route('/pokemon', name: 'pokemon')]
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Bridge\Twig\Attribute\Template;
 class PokemonController extends AbstractController
 {
-    public function __construct(
-        private readonly PokemonService $pokemonService
-    ) {}
-
-    #[Route('/', name: 'index')]
-    public function index(): Response
+    #[Route('/', name: 'pokemon_list')]
+    #[Template('pokemon/index.html.twig')] 
+    public function index(TranslatorInterface $translator): array
     {
-        $this->pokemonService->fetchAndUpdatePokemons();
-        return $this->render('pokemon/index.html.twig');
-    }    
+        // Traductions des titres
+        $title = $translator->trans('pokemon.title');
+        $subtitle = $translator->trans('pokemon.subtitle');
+
+        return [
+            'title' => $title,
+            'subtitle' => $subtitle,
+        ];
+    }
 }
