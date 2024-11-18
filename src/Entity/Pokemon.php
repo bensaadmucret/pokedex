@@ -58,15 +58,6 @@ class Pokemon
     private array $pastTypes = [];
 
     #[ORM\Column(type: Types::JSON)]
-    private array $sprites = [];
-
-    #[ORM\Column(type: Types::JSON)]
-    private array $cries = [];
-
-    #[ORM\Column(type: Types::JSON)]
-    private array $species = [];
-
-    #[ORM\Column(type: Types::JSON)]
     private array $stats = [];
 
     #[ORM\Column(type: Types::JSON)]
@@ -227,28 +218,6 @@ class Pokemon
     public function setPastTypes(array $pastTypes): self
     {
         $this->pastTypes = $pastTypes;
-        return $this;
-    }
-
-    public function getCries(): array
-    {
-        return $this->cries;
-    }
-
-    public function setCries(array $cries): self
-    {
-        $this->cries = $cries;
-        return $this;
-    }
-
-    public function getSpecies(): array
-    {
-        return $this->species;
-    }
-
-    public function setSpecies(array $species): self
-    {
-        $this->species = $species;
         return $this;
     }
 
