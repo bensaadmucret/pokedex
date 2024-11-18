@@ -1,53 +1,93 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
-use App\DTO\PokemonDTO;
+use App\Repository\PokemonRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ORM\Entity(repositoryClass: "App\Repository\PokemonRepository")]
+#[ORM\Entity(repositoryClass: PokemonRepository::class)]
+#[ORM\Table(name: 'pokemon')]
+#[ORM\Index(columns: ['name'], name: 'pokemon_name_idx')]
+#[ORM\Cache(usage: 'READ_WRITE', region: 'pokemon_region')]
 class Pokemon
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
-    #[Groups(["pokemon:read", "pokemon:write"])]
-    private ?int $id = null;
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $id;
 
-    #[ORM\Column(type: "string", length: 255)]
-    #[Groups(["pokemon:read", "pokemon:write"])]
-    private ?string $name = null;
+    #[ORM\Column(type: Types::STRING, length: 255)]
+    private string $name;
 
-    #[ORM\Column(type: "text", nullable: true)]
-    #[Groups(["pokemon:read", "pokemon:write"])]
-    private ?string $image = null;
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $baseExperience;
 
-    #[ORM\Column(type: "json")]
-    #[Groups(["pokemon:read", "pokemon:write"])]
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $height;
+
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $isDefault;
+
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $order;
+
+    #[ORM\Column(type: Types::INTEGER)]
+    private int $weight;
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $abilities = [];
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $forms = [];
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $gameIndices = [];
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $heldItems = [];
+
+    #[ORM\Column(type: Types::STRING, length: 255)]
+    private string $locationAreaEncounters;
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $moves = [];
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $pastTypes = [];
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $sprites = [];
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $cries = [];
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $species = [];
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $stats = [];
+
+    #[ORM\Column(type: Types::JSON)]
     private array $types = [];
 
-    #[ORM\Column(type: "integer")]
-    #[Groups(["pokemon:read", "pokemon:write"])]
-    private ?int $height = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private \DateTimeImmutable $updatedAt;
 
-    #[ORM\Column(type: "integer")]
-    #[Groups(["pokemon:read", "pokemon:write"])]
-    private ?int $weight = null;
+    public function __construct(int $id)
+    {
+        $this->id = $id;
+        $this->updatedAt = new \DateTimeImmutable();
+    }
 
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
-
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -58,14 +98,168 @@ class Pokemon
         return $this;
     }
 
-    public function getImage(): ?string
+    public function getBaseExperience(): int
     {
-        return $this->image;
+        return $this->baseExperience;
     }
 
-    public function setImage(?string $image): self
+    public function setBaseExperience(int $baseExperience): self
     {
-        $this->image = $image;
+        $this->baseExperience = $baseExperience;
+        return $this;
+    }
+
+    public function getHeight(): int
+    {
+        return $this->height;
+    }
+
+    public function setHeight(int $height): self
+    {
+        $this->height = $height;
+        return $this;
+    }
+
+    public function isDefault(): bool
+    {
+        return $this->isDefault;
+    }
+
+    public function setIsDefault(bool $isDefault): self
+    {
+        $this->isDefault = $isDefault;
+        return $this;
+    }
+
+    public function getOrder(): int
+    {
+        return $this->order;
+    }
+
+    public function setOrder(int $order): self
+    {
+        $this->order = $order;
+        return $this;
+    }
+
+    public function getWeight(): int
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(int $weight): self
+    {
+        $this->weight = $weight;
+        return $this;
+    }
+
+    public function getAbilities(): array
+    {
+        return $this->abilities;
+    }
+
+    public function setAbilities(array $abilities): self
+    {
+        $this->abilities = $abilities;
+        return $this;
+    }
+
+    public function getForms(): array
+    {
+        return $this->forms;
+    }
+
+    public function setForms(array $forms): self
+    {
+        $this->forms = $forms;
+        return $this;
+    }
+
+    public function getGameIndices(): array
+    {
+        return $this->gameIndices;
+    }
+
+    public function setGameIndices(array $gameIndices): self
+    {
+        $this->gameIndices = $gameIndices;
+        return $this;
+    }
+
+    public function getHeldItems(): array
+    {
+        return $this->heldItems;
+    }
+
+    public function setHeldItems(array $heldItems): self
+    {
+        $this->heldItems = $heldItems;
+        return $this;
+    }
+
+    public function getLocationAreaEncounters(): string
+    {
+        return $this->locationAreaEncounters;
+    }
+
+    public function setLocationAreaEncounters(string $locationAreaEncounters): self
+    {
+        $this->locationAreaEncounters = $locationAreaEncounters;
+        return $this;
+    }
+
+    public function getMoves(): array
+    {
+        return $this->moves;
+    }
+
+    public function setMoves(array $moves): self
+    {
+        $this->moves = $moves;
+        return $this;
+    }
+
+    public function getPastTypes(): array
+    {
+        return $this->pastTypes;
+    }
+
+    public function setPastTypes(array $pastTypes): self
+    {
+        $this->pastTypes = $pastTypes;
+        return $this;
+    }
+
+    public function getCries(): array
+    {
+        return $this->cries;
+    }
+
+    public function setCries(array $cries): self
+    {
+        $this->cries = $cries;
+        return $this;
+    }
+
+    public function getSpecies(): array
+    {
+        return $this->species;
+    }
+
+    public function setSpecies(array $species): self
+    {
+        $this->species = $species;
+        return $this;
+    }
+
+    public function getStats(): array
+    {
+        return $this->stats;
+    }
+
+    public function setStats(array $stats): self
+    {
+        $this->stats = $stats;
         return $this;
     }
 
@@ -80,25 +274,14 @@ class Pokemon
         return $this;
     }
 
-    public function getHeight(): ?int
+    public function getUpdatedAt(): \DateTimeImmutable
     {
-        return $this->height;
+        return $this->updatedAt;
     }
 
-    public function setHeight(int $height): self
+    public function updateTimestamp(): self
     {
-        $this->height = $height;
-        return $this;
-    }
-
-    public function getWeight(): ?int
-    {
-        return $this->weight;
-    }
-
-    public function setWeight(int $weight): self
-    {
-        $this->weight = $weight;
+        $this->updatedAt = new \DateTimeImmutable();
         return $this;
     }
 }

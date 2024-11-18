@@ -1,51 +1,121 @@
 <?php
 
+declare(strict_types=1);
 
-use Symfony\Component\Serializer\Annotation\Groups;
+namespace App\DTO;
+
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
-final readonly class PokemonDTO
+readonly class PokemonDTO
 {
-    #[Groups(['pokemon:read', 'pokemon:write'])]
-    #[Assert\NotNull]
-    public int $id;
-
-    #[Groups(['pokemon:read', 'pokemon:write'])]
-    #[Assert\NotBlank]
-    public string $name;
-
-    #[Groups(['pokemon:read', 'pokemon:write'])]
-    #[Assert\Url]
-    public string $image;
-
-    #[Groups(['pokemon:read', 'pokemon:write'])]
-    #[Assert\All([
-        new Assert\Type('string'),
-        new Assert\NotBlank
-    ])]
-    public array $types;
-
-    #[Groups(['pokemon:read', 'pokemon:write'])]
-    #[Assert\Positive]
-    public int $height;
-
-    #[Groups(['pokemon:read', 'pokemon:write'])]
-    #[Assert\Positive]
-    public int $weight;
-
     public function __construct(
-        int $id = 0,
-        string $name = '',
-        string $image = '',
-        array $types = [],
-        int $height = 0,
-        int $weight = 0
+        #[Assert\NotNull]
+        #[Assert\Type('integer')]
+        #[Assert\Positive]
+        public int $id,
+
+        #[Assert\NotBlank]
+        #[Assert\Type('string')]
+        #[Assert\Length(min: 1, max: 255)]
+        public string $name,
+
+        #[Assert\NotNull]
+        #[Assert\Type('integer')]
+        #[Assert\PositiveOrZero]
+        #[SerializedName('base_experience')]
+        public int $baseExperience,
+
+        #[Assert\NotNull]
+        #[Assert\Type('integer')]
+        #[Assert\Positive]
+        public int $height,
+
+        #[Assert\NotNull]
+        #[Assert\Type('boolean')]
+        #[SerializedName('is_default')]
+        public bool $isDefault,
+
+        #[Assert\NotNull]
+        #[Assert\Type('integer')]
+        #[Assert\PositiveOrZero]
+        public int $order,
+
+        #[Assert\NotNull]
+        #[Assert\Type('integer')]
+        #[Assert\Positive]
+        public int $weight,
+
+        #[Assert\NotNull]
+        #[Assert\Type('array')]
+        #[Assert\Valid]
+        public array $abilities,
+
+        #[Assert\NotNull]
+        #[Assert\Type('array')]
+        #[Assert\Valid]
+        public array $forms,
+
+        #[Assert\NotNull]
+        #[Assert\Type('array')]
+        #[Assert\Valid]
+        #[SerializedName('game_indices')]
+        public array $gameIndices,
+
+        #[Assert\NotNull]
+        #[Assert\Type('array')]
+        #[Assert\Valid]
+        #[SerializedName('held_items')]
+        public array $heldItems,
+
+        #[Assert\NotBlank]
+        #[Assert\Type('string')]
+        #[Assert\Url]
+        #[SerializedName('location_area_encounters')]
+        public string $locationAreaEncounters,
+
+        #[Assert\NotNull]
+        #[Assert\Type('array')]
+        #[Assert\Valid]
+        public array $moves,
+
+        #[Assert\NotNull]
+        #[Assert\Type('array')]
+        #[Assert\Valid]
+        #[SerializedName('past_types')]
+        public array $pastTypes,
+
+        #[Assert\NotNull]
+        #[Assert\Type('array')]
+        #[Assert\Valid]
+        public array $stats,
+
+        #[Assert\NotNull]
+        #[Assert\Type('array')]
+        #[Assert\Valid]
+        public array $types
     ) {
-        $this->id = $id;
-        $this->name = $name;
-        $this->image = $image;
-        $this->types = $types;
-        $this->height = $height;
-        $this->weight = $weight;
+    }
+
+    public static function createFromArray(array $data): self
+    {
+        return new self(
+            id: $data['id'],
+            name: $data['name'],
+            baseExperience: $data['base_experience'],
+            height: $data['height'],
+            isDefault: $data['is_default'],
+            order: $data['order'],
+            weight: $data['weight'],
+            abilities: $data['abilities'],
+            forms: $data['forms'],
+            gameIndices: $data['game_indices'],
+            heldItems: $data['held_items'],
+            locationAreaEncounters: $data['location_area_encounters'],
+            moves: $data['moves'],
+            pastTypes: $data['past_types'],
+            stats: $data['stats'],
+            types: $data['types']
+        );
     }
 }

@@ -1,72 +1,88 @@
 <?php
+
+declare(strict_types=1);
+
 namespace App\Service;
 
 use App\DTO\PokemonDTO;
 use App\Entity\Pokemon;
 use App\Repository\PokemonRepository;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Psr\Log\LoggerInterface;
 
-#[Autowire]
 class PokemonService
 {
-    private $httpClient;
-    private $pokemonRepository;
+    private const API_BASE_URL = 'https://pokeapi.co/api/v2';
 
     public function __construct(
-        #[Autowire('pokeapi.client')] HttpClientInterface $httpClient,
-        PokemonRepository $pokemonRepository
+        private readonly HttpClientInterface $httpClient,
+        private readonly PokemonRepository $pokemonRepository,
+        private readonly TagAwareCacheInterface $cache,
+        private readonly LoggerInterface $logger
     ) {
-        $this->httpClient = $httpClient;
-        $this->pokemonRepository = $pokemonRepository;
     }
 
-    public function fetchAndUpdatePokemons(int $count = 100): void
+    public function fetchAndSavePokemon(int $id): Pokemon
     {
-        $randomIds = $this->getRandomPokemonIds($count);
+        return $this->cache->get(
+            "pokemon_$id",
+            function () use ($id) {
+                $response = $this->httpClient->request('GET', self::API_BASE_URL . "/pokemon/$id");
+                $data = $response->toArray();
 
-        foreach ($randomIds as $id) {
-            try {
-                $pokemon = $this->fetchPokemonData($id);
-                $this->updateOrCreatePokemon($pokemon);
-            } catch (\Exception $e) {
-                //$this->logger->error($e->getMessage());
+                $dto = PokemonDTO::createFromArray($data);
+                
+                $pokemon = $this->pokemonRepository->find($id) ?? new Pokemon($id);
+                $this->updatePokemonFromDTO($pokemon, $dto);
+                
+                $this->pokemonRepository->save($pokemon, true);
+                return $pokemon;
             }
-        }
+        );
     }
 
-    private function getRandomPokemonIds(int $count): array
+    private function updatePokemonFromDTO(Pokemon $pokemon, PokemonDTO $dto): void
     {
-        $maxId = 898; // Current number of Pokemon in PokeAPI
-        return array_rand(range(1, $maxId), $count);
+        $pokemon
+            ->setName($dto->name)
+            ->setBaseExperience($dto->baseExperience)
+            ->setHeight($dto->height)
+            ->setIsDefault($dto->isDefault)
+            ->setOrder($dto->order)
+            ->setWeight($dto->weight)
+            ->setAbilities($dto->abilities)
+            ->setForms($dto->forms)
+            ->setGameIndices($dto->gameIndices)
+            ->setHeldItems($dto->heldItems)
+            ->setLocationAreaEncounters($dto->locationAreaEncounters)
+            ->setMoves($dto->moves)
+            ->setPastTypes($dto->pastTypes)
+            ->setStats($dto->stats)
+            ->setTypes($dto->types)
+            ->updateTimestamp();
     }
 
-    private function fetchPokemonData(int $id): PokemonDTO
+    /**
+     * @return Pokemon[]
+     */
+    public function getAllPokemon(): array
     {
-        $response = $this->httpClient->request('GET', sprintf('/pokemon/%d', $id));
-        $data = $response->toArray();
-
-        $pokemonDto = new PokemonDTO();
-        $pokemonDto->name = $data['name'];
-        $pokemonDto->image = $data['sprites']['front_default'];
-        $pokemonDto->height = $data['height'];
-        $pokemonDto->weight = $data['weight'];
-        $pokemonDto->types = array_column($data['types'], 'type', 'name');
-
-        return $pokemonDto;
+        return $this->cache->get('all_pokemon', function () {
+            return $this->pokemonRepository->findAllOptimized();
+        });
     }
 
-    private function updateOrCreatePokemon(PokemonDTO $pokemonDto): void
+    public function searchPokemon(string $name): array
     {
-        $pokemon = $this->pokemonRepository->findOneBy(['name' => $pokemonDto->name]);
-
-        if ($pokemon) {
-            $pokemon->updateFromDTO($pokemonDto);
-        } else {
-            $pokemon = new Pokemon();
-            $pokemon->updateFromDTO($pokemonDto);
-            $this->pokemonRepository->save($pokemon);
-        }
+        return $this->cache->get('search_' . md5($name), function () use ($name) {
+            return $this->pokemonRepository->findByNamePartial($name);
+        });
     }
 
+    public function invalidateCache(int $id): void
+    {
+        $this->cache->delete("pokemon_$id");
+        $this->cache->delete('all_pokemon');
+    }
 }
