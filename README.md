@@ -39,25 +39,24 @@ L'objectif est de fournir une interface utilisateur intuitive pour visualiser le
 ## Installation
 
 Clonez le dépôt :
-    ```sh
-    git clone <URL_DU_DEPOT>
-    cd <NOM_DU_PROJET>
-    ```
+```sh
+    git clone <U[RL_DU_DEPOT](https://github.com/bensaadmucret/pokedex)>
+    cd pokedex
+```
 
 Construisez et démarrez les conteneurs Docker :
-    ```sh
+ ```sh
     docker compose build --no-cache
     docker compose up --pull always -d --wait
-
-    ```
+```
 Installez les dépendances :
-    ```sh
+```sh
     docker compose exec php composer install
-    ```
+```
 Pour arrêter les conteneurs Docker :
-    ```sh
+```sh
     docker compose down --remove-orphans
-    ```
+```
 ## Gestion de la Base de Données avec Doctrine
 
 ### Créer la base de données
