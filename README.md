@@ -126,13 +126,6 @@ to   : L'ID de fin du Pokémon à synchroniser.
 batch-size : Le nombre de Pokémon à traiter en parallèle. Par défaut, 10.
 ```
 
-## Un script shell pour automatiser l'exécution de la commande
-### Pour exécuter le script avec des options :
-```sh
-./sync_pokemon.sh 1 100 20
-```
-
-
 ### Commandes Makefile
 
 Le Makefile fournit plusieurs commandes pour faciliter le développement et la gestion des conteneurs Docker.
