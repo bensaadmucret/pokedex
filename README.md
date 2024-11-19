@@ -181,10 +181,6 @@ Le Makefile fournit plusieurs commandes pour faciliter le développement et la g
     make cc
     ```
 
-## Développement
-
-Pour développer l'application, vous pouvez utiliser les commandes Makefile pour interagir avec les conteneurs Docker et exécuter des commandes Symfony et Composer.
-
 ## Contribution
 
 Les contributions sont les bienvenues ! Si vous souhaitez contribuer à ce projet, veuillez suivre ces étapes :
