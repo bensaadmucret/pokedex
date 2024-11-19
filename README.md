@@ -48,7 +48,8 @@ Construisez et démarrez les conteneurs Docker :
  ```sh
     docker compose build --no-cache
     docker compose up --pull always -d --wait
-    Ouvrez https://localhost sur votre navigateur Web préféré et acceptez le certificat TLS généré automatiquement
+    Ouvrez https://localhost sur votre navigateur Web préféré et 
+    Acceptez le certificat TLS généré automatiquement
 ```
 Installez les dépendances :
 ```sh
