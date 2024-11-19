@@ -7,16 +7,12 @@ namespace App\Components;
 use App\Repository\PokemonRepository;
 use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
-use Symfony\UX\LiveComponent\Attribute\LiveAction;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
-use Doctrine\ORM\Tools\Pagination\Paginator;
 
 #[AsLiveComponent('pokemon_list')]
-class PokemonListComponent
+class PokemonList
 {
     use DefaultActionTrait;
-
-    private const ITEMS_PER_PAGE = 12;
 
     #[LiveProp(writable: true)]
     public string $search = '';
@@ -30,66 +26,39 @@ class PokemonListComponent
     #[LiveProp(writable: true)]
     public string $sortDirection = 'asc';
 
-    #[LiveProp(writable: true)]
-    public int $page = 1;
-
-    #[LiveAction]
-    public function updatePage(int $page): void
-    {
-        $this->page = $page;
-    }
-
     public function __construct(
         private readonly PokemonRepository $pokemonRepository
     ) {
     }
 
-    public function getPokemons(): Paginator
+    public function getPokemons(): array
     {
         $queryBuilder = $this->pokemonRepository->createQueryBuilder('p');
 
+        // Apply search filter
         if ($this->search) {
             $queryBuilder
                 ->andWhere('LOWER(p.name) LIKE LOWER(:search)')
                 ->setParameter('search', '%' . $this->search . '%');
         }
 
+        // Apply type filter
         if ($this->type) {
             $queryBuilder
-                ->andWhere("JSON_CONTAINS(p.types, :type, '$[*].type.name') = 1")
+                ->andWhere("jsonb_exists(p.types, :type)")
                 ->setParameter('type', json_encode($this->type));
         }
 
+        // Apply sorting
         if ($this->sortBy === 'height') {
             $queryBuilder->orderBy('p.height', $this->sortDirection);
         } else {
             $queryBuilder->orderBy('p.name', $this->sortDirection);
         }
 
-        $queryBuilder
-            ->setFirstResult(($this->page - 1) * self::ITEMS_PER_PAGE)
-            ->setMaxResults(self::ITEMS_PER_PAGE);
-
-        return new Paginator($queryBuilder);
-    }
-
-    public function getPaginationData(): array
-    {
-        $paginator = $this->getPokemons();
-        $totalItems = count($paginator);
-        $lastPage = ceil($totalItems / self::ITEMS_PER_PAGE);
-
-        $neighbors = 2;
-        $start = max(1, min($this->page - $neighbors, $lastPage - (2 * $neighbors)));
-        $end = min($lastPage, max($this->page + $neighbors, (2 * $neighbors) + 1));
-
-        return [
-            'currentPage' => $this->page,
-            'lastPage' => $lastPage,
-            'start' => $start,
-            'end' => $end,
-            'totalItems' => $totalItems,
-        ];
+        return $queryBuilder
+            ->getQuery()
+            ->getResult();
     }
 
     public function getPokemonTypes(): array
@@ -100,6 +69,4 @@ class PokemonListComponent
             'Steel', 'Fairy'
         ];
     }
-
-    
 }

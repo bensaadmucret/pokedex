@@ -1,85 +1,80 @@
+{# templates/components/pokemon_list.html.twig #}
 <div class="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
 	<div class="relative py-3 sm:max-w-7xl sm:mx-auto">
-		<div class="relative px-4 py-10 bg-white mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
-			{# Filters Section (reste inchangé) ... #}
-
-			{# Pokemon Grid #}
-				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"> {% for pokemon in this.getPokemons() %}
-					<div
-						class="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-200">{# Card content reste inchangé ... #}
+		<div
+			class="relative px-4 py-10 bg-white mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
+			{# Filters Section #}
+			<div class="space-y-4 mb-8">
+				<div
+					class="grid grid-cols-1 md:grid-cols-3 gap-4">
+					{# Search Input #}
+					<div>
+						<label for="search" class="block text-sm font-medium text-gray-700">Search Pokemon</label>
+						<input type="text" id="search" data-model="search" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Enter pokemon name...">
 					</div>
-				{% else %}
-					<div class="col-span-full text-center py-12">
-						<svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewbox="0 0 24 24" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-						</svg>
-						<h3 class="mt-2 text-sm font-medium text-gray-900">No Pokemon found</h3>
-						<p class="mt-1 text-sm text-gray-500">Try adjusting your search or filter criteria.</p>
-					</div>
-				{% endfor %}
-			</div>
 
-			{# Pagination #}
-			{% set pagination = this.getPaginationData() %}
-			{% if pagination.lastPage > 1 %}
-				<div class="mt-8">
-					<nav class="flex items-center justify-between border-t border-gray-200 px-4 sm:px-0">
-						<div class="flex w-0 flex-1">
-							{% if pagination.currentPage > 1 %}
-								<button data-action="live#action" data-action-name="updatePage" data-page-param="{{ pagination.currentPage - 1 }}" class="inline-flex items-center border-t-2 border-transparent pt-4 pr-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-									<svg class="mr-3 h-5 w-5 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
-										<path fill-rule="evenodd" d="M7.707 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l2.293 2.293a1 1 0 010 1.414z" clip-rule="evenodd"/>
-									</svg>
-									Previous
-								</button>
-							{% endif %}
-						</div>
-
-						<div class="hidden md:flex">
-							{% for i in pagination.start..pagination.end %}
-								<button data-action="live#action" data-action-name="updatePage" data-page-param="{{ i }}" class="inline-flex items-center border-t-2 px-4 pt-4 text-sm font-medium
-																																																												                                        {% if i == pagination.currentPage %}
-																																																												                                            border-indigo-500 text-indigo-600
-																																																												                                        {% else %}
-																																																												                                            border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700
-																																																												                                        {% endif %}">
-									{{ i }}
-								</button>
+					{# Type Filter #}
+					<div>
+						<label for="type" class="block text-sm font-medium text-gray-700">Filter by Type</label>
+						<select id="type" data-model="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+							<option value="">All Types</option>
+							{% for type in this.getPokemonTypes() %}
+								<option value="{{ type|lower }}" {{ this.type == type|lower ? 'selected' : '' }}>
+									{{ type }}
+								</option>
 							{% endfor %}
-						</div>
+						</select>
+					</div>
 
-						<div class="flex w-0 flex-1 justify-end">
-							{% if pagination.currentPage < pagination.lastPage %}
-								<button data-action="live#action" data-action-name="updatePage" data-page-param="{{ pagination.currentPage + 1 }}" class="inline-flex items-center border-t-2 border-transparent pt-4 pl-1 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700">
-									Next
-									<svg class="ml-3 h-5 w-5 text-gray-400" viewbox="0 0 20 20" fill="currentColor">
-										<path fill-rule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+					{# Sort Options #}
+					<div>
+						<label for="sort" class="block text-sm font-medium text-gray-700">Sort by</label>
+						<div class="mt-1 flex space-x-2">
+							<select id="sort" data-model="sortBy" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+								<option value="name" {{ this.sortBy == 'name' ? 'selected' : '' }}>Name</option>
+								<option value="height" {{ this.sortBy == 'height' ? 'selected' : '' }}>Height</option>
+							</select>
+							<button data-action="live#action" data-action-name="toggleSort" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+								{% if this.sortDirection == 'asc' %}
+									<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
 									</svg>
-								</button>
-							{% endif %}
+								{% else %}
+									<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+									</svg>
+								{% endif %}
+							</button>
 						</div>
-					</nav>
-
-					{# Mobile Pagination Info #}
-					<div class="mt-4 flex items-center justify-center sm:hidden">
-						<p class="text-sm text-gray-700">
-							Showing page
-							<span class="font-medium">{{ pagination.currentPage }}</span>
-							of
-							<span class="font-medium">{{ pagination.lastPage }}</span>
-						</p>
 					</div>
 				</div>
-			{% endif %}
+			</div>
 
-			{# Results Count #}
-			<div class="mt-4 text-sm text-gray-700 text-center">
-				Showing
-				{{ pagination.totalItems }}
-				Pokémon
-				{% if this.search or this.type %}
-					matching your criteria
-				{% endif %}
+			{# Pokemon Grid #}
+			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+				{% for pokemon in this.getPokemons() %}
+					<div class="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-200">
+						<div class="flex justify-center mb-4">
+							<img src="{{ pokemon.sprites['front_default'] }}" alt="{{ pokemon.name }}" class="w-32 h-32 object-contain transform group-hover:scale-110 transition-transform duration-200">
+						</div>
+						<div class="text-center">
+							<h3 class="text-lg leading-6 font-medium text-gray-900 capitalize">
+								{{ pokemon.name }}
+							</h3>
+							<div class="flex justify-center gap-2 mt-2">
+								{% for type in pokemon.types %}
+									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize {{ type.type.name|pokemon_type_class }}">
+										{{ type.type.name }}
+									</span>
+								{% endfor %}
+							</div>
+							<p class="mt-2 text-sm text-gray-500">
+								Height:
+								{{ pokemon.height / 10 }}m
+							</p>
+						</div>
+					</div>
+				{% endfor %}
 			</div>
 		</div>
 	</div>

@@ -7,16 +7,29 @@ if (!Encore.isRuntimeEnvironmentConfigured()) {
 }
 
 Encore
+    // directory where compiled assets will be stored
     .setOutputPath('public/build/')
     .setPublicPath('/build')
-    .addEntry('app_js', './assets/app.js') // Changé en 'app_js'
+    .addEntry('app', './assets/app.js')
+    .enableStimulusBridge('./assets/controllers.json')
     .splitEntryChunks()
     .enableSingleRuntimeChunk()
     .cleanupOutputBeforeBuild()
     .enableBuildNotifications()
     .enableSourceMaps(!Encore.isProduction())
+    // enables hashed filenames (e.g. app.abc123.css)
     .enableVersioning(Encore.isProduction())
-    .addStyleEntry('app_css', './assets/styles/app.css') // Changé en 'app_css'
+
+    .configureBabel((config) => {
+        config.plugins.push('@babel/plugin-transform-class-properties');
+    })
+
+    // enables @babel/preset-env polyfills
+    .configureBabelPresetEnv((config) => {
+        config.useBuiltIns = 'usage';
+        config.corejs = 3;
+    })
+
     .enablePostCssLoader((options) => {
         options.postcssOptions = {
             plugins: {
@@ -25,6 +38,7 @@ Encore
             },
         };
     })
+
 ;
 
 module.exports = Encore.getWebpackConfig();

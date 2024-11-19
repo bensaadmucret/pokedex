@@ -1,0 +1,6 @@
+<div {{ attributes }}>
+	<p>{{ this.message }}</p>
+	<input type="text" id="message" data-model="message" data-action="live#action" data-action-name="updateMessage">
+	<button data-action="live#action" data-action-name="updateMessage" data-action-param="{{ this.message }}">Update
+						        Message</button>
+</div>

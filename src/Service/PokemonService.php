@@ -25,21 +25,16 @@ class PokemonService
 
     public function fetchAndSavePokemon(int $id): Pokemon
     {
-        return $this->cache->get(
-            "pokemon_$id",
-            function () use ($id) {
-                $response = $this->httpClient->request('GET', self::API_BASE_URL . "/pokemon/$id");
-                $data = $response->toArray();
-
-                $dto = PokemonDTO::createFromArray($data);
-                
-                $pokemon = $this->pokemonRepository->find($id) ?? new Pokemon($id);
-                $this->updatePokemonFromDTO($pokemon, $dto);
-                
-                $this->pokemonRepository->save($pokemon, true);
-                return $pokemon;
-            }
-        );
+        $response = $this->httpClient->request('GET', self::API_BASE_URL . "/pokemon/$id");
+        $data = $response->toArray();
+    
+        $dto = PokemonDTO::createFromArray($data);
+        
+        $pokemon = $this->pokemonRepository->find($id) ?? new Pokemon($id);
+        $this->updatePokemonFromDTO($pokemon, $dto);
+        
+        $this->pokemonRepository->save($pokemon, true);
+        return $pokemon;
     }
 
     private function updatePokemonFromDTO(Pokemon $pokemon, PokemonDTO $dto): void
@@ -60,29 +55,7 @@ class PokemonService
             ->setPastTypes($dto->pastTypes)
             ->setStats($dto->stats)
             ->setTypes($dto->types)
+            ->setSprites($dto->sprites)
             ->updateTimestamp();
-    }
-
-    /**
-     * @return Pokemon[]
-     */
-    public function getAllPokemon(): array
-    {
-        return $this->cache->get('all_pokemon', function () {
-            return $this->pokemonRepository->findAllOptimized();
-        });
-    }
-
-    public function searchPokemon(string $name): array
-    {
-        return $this->cache->get('search_' . md5($name), function () use ($name) {
-            return $this->pokemonRepository->findByNamePartial($name);
-        });
-    }
-
-    public function invalidateCache(int $id): void
-    {
-        $this->cache->delete("pokemon_$id");
-        $this->cache->delete('all_pokemon');
     }
 }
