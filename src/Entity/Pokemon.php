@@ -4,27 +4,90 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Repository\PokemonRepository;
+use ApiPlatform\Metadata\Get;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\OpenApi\Model;
+use ApiPlatform\Metadata\ApiProperty;
+use ApiPlatform\Metadata\ApiResource;
+use App\Repository\PokemonRepository;
+use ApiPlatform\Metadata\GetCollection;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 
 #[ORM\Entity(repositoryClass: PokemonRepository::class)]
 #[ORM\Table(name: 'pokemon')]
 #[ORM\Index(columns: ['name'], name: 'pokemon_name_idx')]
 #[ORM\Cache(usage: 'READ_WRITE', region: 'pokemon_region')]
+#[ApiResource(
+    shortName: 'Pokemon',
+    description: 'Une ressource représentant un Pokemon dans notre application',
+    operations: [
+        new GetCollection(
+            openapi: new Model\Operation(
+                summary: 'Récupérer tous les Pokemons',
+                description: 'Retourne la liste complète des Pokemons disponibles avec leur nom et niveau.',
+                responses: [
+                    '200' => [
+                        'description' => 'Liste des Pokemons récupérée avec succès',
+                    ],
+                    '404' => [
+                        'description' => 'Aucun Pokemon trouvé',
+                    ],
+                ]
+            ),
+            normalizationContext: ['groups' => ['pokemon:read']]
+        ),
+        new Get(
+            openapi: new Model\Operation(
+                summary: 'Récupérer un Pokemon spécifique',
+                description: 'Retourne les détails d\'un Pokemon en fonction de son identifiant.',
+                responses: [
+                    '200' => [
+                        'description' => 'Pokemon trouvé avec succès',
+                    ],
+                    '404' => [
+                        'description' => 'Pokemon non trouvé',
+                    ],
+                ]
+            ),
+            normalizationContext: ['groups' => ['pokemon:read']]
+        ),
+    ],
+    paginationEnabled: true
+)]
 class Pokemon
 {
     #[ORM\Id]
     #[ORM\Column(type: Types::INTEGER)]
+    #[Groups(['pokemon:read'])]
+    #[ApiProperty(
+        identifier: true,
+        description: 'L\'identifiant unique du Pokemon',
+        openapiContext: [
+            'type' => 'integer',
+            'example' => 1
+        ]
+    )]
     private int $id;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
+    #[Groups(['pokemon:read'])]
+    #[ApiProperty(
+        description: 'Le nom du Pokemon',
+        openapiContext: [
+            'type' => 'string',
+            'example' => 'Pikachu',
+            'maxLength' => 255
+        ]
+    )]
     private string $name;
 
     #[ORM\Column(type: Types::INTEGER)]
     private int $baseExperience;
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Groups(['pokemon:read'])]
     private int $height;
 
     #[ORM\Column(type: Types::BOOLEAN)]
@@ -34,9 +97,10 @@ class Pokemon
     private int $pokemonOrder; 
 
     #[ORM\Column(type: Types::INTEGER)]
+    #[Groups(['pokemon:read'])]
     private int $weight;
 
-    #[ORM\Column(type: Types::JSON)]
+    #[ORM\Column(type: 'json', nullable: true, options: ["jsonb" => true])]
     private array $abilities = [];
 
     #[ORM\Column(type: Types::JSON)]
@@ -58,9 +122,20 @@ class Pokemon
     private array $pastTypes = [];
 
     #[ORM\Column(type: Types::JSON)]
+    #[Groups(['pokemon:read'])]
+    #[ApiProperty(
+        description: 'Le niveau actuel du Pokemon',
+        openapiContext: [
+            'type' => 'integer',
+            'example' => 25,
+            'minimum' => 1,
+            'maximum' => 100
+        ]
+    )]
     private array $stats = [];
 
     #[ORM\Column(type: Types::JSON)]
+    #[Groups(['pokemon:read'])]
     private array $types = [];
 
     #[ORM\Column(type: Types::JSON)]
@@ -267,5 +342,33 @@ class Pokemon
     {
         $this->updatedAt = new \DateTimeImmutable();
         return $this;
+    }
+
+    public function getAttack(): int
+    {
+        return $this->stats['attack'] ?? 0;
+    }
+
+    public function getDefense(): int
+    {
+        return $this->stats['defense'] ?? 0;
+    }
+
+    public function getHp(): int
+    {
+        return $this->stats['hp'] ?? 0;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'height' => $this->height,
+            'weight' => $this->weight,
+            'stats' => $this->stats,
+            'types' => $this->types,
+      
+        ];
     }
 }

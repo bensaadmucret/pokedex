@@ -55,5 +55,6 @@ class PokemonRepository extends ServiceEntityRepository
             ->orderBy('p.name', 'ASC')
             ->getQuery()
             ->getResult();
+        
     }
 }

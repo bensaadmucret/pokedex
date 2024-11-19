@@ -1,5 +1,4 @@
-{# templates/components/pokemon_list.html.twig #}
-<div class="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
+<div {{ attributes }} class="min-h-screen bg-gray-100 py-6 flex flex-col justify-center sm:py-12">
 	<div class="relative py-3 sm:max-w-7xl sm:mx-auto">
 		<div
 			class="relative px-4 py-10 bg-white mx-8 md:mx-0 shadow rounded-3xl sm:p-10">
@@ -9,15 +8,15 @@
 					class="grid grid-cols-1 md:grid-cols-3 gap-4">
 					{# Search Input #}
 					<div>
-						<label for="search" class="block text-sm font-medium text-gray-700">Search Pokemon</label>
-						<input type="text" id="search" data-model="search" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Enter pokemon name...">
+						<label for="search" class="block text-sm font-medium text-gray-700">Attrapez-les tous !</label>
+						<input type="search" value="{{ query }}" id="search" data-model="query" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" placeholder="Entrez le nom du Pokémon...">
 					</div>
 
 					{# Type Filter #}
 					<div>
-						<label for="type" class="block text-sm font-medium text-gray-700">Filter by Type</label>
-						<select id="type" data-model="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-							<option value="">All Types</option>
+						<label for="type" class="block text-sm font-medium text-gray-700">Filtrer par type</label>
+						<select id="type" data-model="type" data-action="live#update" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+							<option value="">Touts les types de Pokémon</option>
 							{% for type in this.getPokemonTypes() %}
 								<option value="{{ type|lower }}" {{ this.type == type|lower ? 'selected' : '' }}>
 									{{ type }}
@@ -28,54 +27,73 @@
 
 					{# Sort Options #}
 					<div>
-						<label for="sort" class="block text-sm font-medium text-gray-700">Sort by</label>
+						<label for="sort" class="block text-sm font-medium text-gray-700">Trier par</label>
 						<div class="mt-1 flex space-x-2">
-							<select id="sort" data-model="sortBy" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-								<option value="name" {{ this.sortBy == 'name' ? 'selected' : '' }}>Name</option>
-								<option value="height" {{ this.sortBy == 'height' ? 'selected' : '' }}>Height</option>
+							<select id="sort" data-model="sortBy" data-action="live#update" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+								<option value="name" {{ this.sortBy == 'name' ? 'selected' : '' }}>Nom</option>
+								<option value="height" {{ this.sortBy == 'height' ? 'selected' : '' }}>Taille</option>
+								<option value="weight" {{ this.sortBy == 'weight' ? 'selected' : '' }}>Poids</option>
 							</select>
-							<button data-action="live#action" data-action-name="toggleSort" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-								{% if this.sortDirection == 'asc' %}
-									<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/>
-									</svg>
-								{% else %}
-									<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-									</svg>
-								{% endif %}
-							</button>
+
+						</div>
+					</div>
+					<div>
+						<div>
+							<label for="sortDirection" class="block text-sm font-medium text-gray-700">Trier par</label>
+							<select id="sortDirection" data-model="sortDirection" data-action="live#update" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+								<option value="asc" {{ this.sortDirection == 'asc' ? 'selected' : '' }}>Croissant</option>
+								<option value="desc" {{ this.sortDirection == 'desc' ? 'selected' : '' }}>Décroissant</option>
+							</select>
 						</div>
 					</div>
 				</div>
 			</div>
-
-			{# Pokemon Grid #}
-			<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-				{% for pokemon in this.getPokemons() %}
-					<div class="relative group bg-white p-6 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-500 rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-200">
-						<div class="flex justify-center mb-4">
-							<img src="{{ pokemon.sprites['front_default'] }}" alt="{{ pokemon.name }}" class="w-32 h-32 object-contain transform group-hover:scale-110 transition-transform duration-200">
-						</div>
-						<div class="text-center">
-							<h3 class="text-lg leading-6 font-medium text-gray-900 capitalize">
-								{{ pokemon.name }}
-							</h3>
-							<div class="flex justify-center gap-2 mt-2">
-								{% for type in pokemon.types %}
-									<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize {{ type.type.name|pokemon_type_class }}">
-										{{ type.type.name }}
-									</span>
-								{% endfor %}
-							</div>
-							<p class="mt-2 text-sm text-gray-500">
-								Height:
-								{{ pokemon.height / 10 }}m
-							</p>
-						</div>
-					</div>
-				{% endfor %}
-			</div>
 		</div>
+
+		{# Separator between Filters and Pokemon Grid #}
+		<div class="border-t border-gray-200 my-8"></div>
+		{# Add a thin border to visually separate the sections #}
+
+		{# Section des Pokémon - Grid avec condition "Aucun Pokémon attrapé" si la liste est vide #}
+		<div
+			class="min-h-screen bg-gray-100 py-2 flex flex-col justify-center sm:py-1">
+			{# Vérification s'il y a des Pokémon à afficher #}
+			{% if this.getPokemons() is empty %}
+				<div class="text-center col-span-full py-12">
+					<p class="text-lg text-gray-700">Aucun Pokémon attrapé &#128577;</p>
+				</div>
+			{% else %}
+				<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+					{% for pokemon in this.getPokemons() %}
+						<div class="relative group bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-200">
+							<div class="flex justify-center mb-4">
+								<img src="{{ pokemon.sprites.front_default }}" alt="{{ pokemon.name }}" class="w-32 h-32 object-contain">
+							</div>
+							<div class="text-center">
+								<h3 class="text-lg leading-6 font-medium text-gray-900 capitalize">
+									{{ pokemon.name }}
+								</h3>
+								<div class="flex justify-center gap-2 mt-2">
+									{% for type in pokemon.types %}
+										<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize {{ type.type.name|pokemon_type_class }}">
+											{{ type.type.name }}
+										</span>
+									{% endfor %}
+								</div>
+								<p class="mt-2 text-sm text-gray-500">
+									Taille :
+									{{ pokemon.height / 10 }}m
+								</p>
+								<p class="mt-2 text-sm text-gray-500">
+									Poids :
+									{{ pokemon.weight / 10 }}kg
+								</p>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+		</div>
+
 	</div>
 </div>

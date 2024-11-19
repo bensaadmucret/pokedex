@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\DTO;
 
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+use ApiPlatform\Metadata\ApiProperty;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
 readonly class PokemonDTO
@@ -13,11 +15,25 @@ readonly class PokemonDTO
         #[Assert\NotNull]
         #[Assert\Type('integer')]
         #[Assert\Positive]
+        #[Groups(['pokemon:read'])]
+        #[ApiProperty(
+            identifier: true,
+            description: 'L\'identifiant unique du Pokemon',
+            openapiContext: [
+                'type' => 'integer',
+                'example' => 1
+            ]
+        )]
+        #[Assert\LessThanOrEqual(
+            value: 100,
+            message: 'L\'identifiant du Pokemon ne peut pas dépasser 100.'
+        )]
         public int $id,
 
         #[Assert\NotBlank]
         #[Assert\Type('string')]
         #[Assert\Length(min: 1, max: 255)]
+        #[Groups(['pokemon:read'])]
         public string $name,
 
         #[Assert\NotNull]
@@ -29,6 +45,7 @@ readonly class PokemonDTO
         #[Assert\NotNull]
         #[Assert\Type('integer')]
         #[Assert\Positive]
+        #[Groups(['pokemon:read'])]
         public int $height,
 
         #[Assert\NotNull]
@@ -44,6 +61,7 @@ readonly class PokemonDTO
         #[Assert\NotNull]
         #[Assert\Type('integer')]
         #[Assert\Positive]
+        #[Groups(['pokemon:read'])]
         public int $weight,
 
         #[Assert\NotNull]
@@ -88,11 +106,13 @@ readonly class PokemonDTO
         #[Assert\NotNull]
         #[Assert\Type('array')]
         #[Assert\Valid]
+        #[Groups(['pokemon:read'])]
         public array $stats,
 
         #[Assert\NotNull]
         #[Assert\Type('array')]
         #[Assert\Valid]
+        #[Groups(['pokemon:read'])]
         public array $types,
 
         #[Assert\NotNull]

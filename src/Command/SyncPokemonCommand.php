@@ -14,7 +14,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:sync-pokemon',
-    description: 'Synchronize Pokemon data from PokeAPI'
+    description: 'Synchronisez les données Pokémon, depuis PokeAPI'
 )]
 class SyncPokemonCommand extends Command
 {
@@ -57,7 +57,7 @@ class SyncPokemonCommand extends Command
         }
 
         $io->progressFinish();
-        $io->success('Pokemon synchronization completed!');
+        $io->success('Synchronisation Pokémon terminée avec succès !');
 
         return Command::SUCCESS;
     }

@@ -8,33 +8,52 @@ use App\DTO\PokemonDTO;
 use App\Entity\Pokemon;
 use App\Repository\PokemonRepository;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
 
 class PokemonService
 {
-    private const API_BASE_URL = 'https://pokeapi.co/api/v2';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly PokemonRepository $pokemonRepository,
         private readonly TagAwareCacheInterface $cache,
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
+        private readonly string $apiBaseUrl,
     ) {
     }
 
-    public function fetchAndSavePokemon(int $id): Pokemon
+    public function fetchAndSavePokemon(int $id): ?Pokemon
     {
-        $response = $this->httpClient->request('GET', self::API_BASE_URL . "/pokemon/$id");
-        $data = $response->toArray();
-    
-        $dto = PokemonDTO::createFromArray($data);
-        
-        $pokemon = $this->pokemonRepository->find($id) ?? new Pokemon($id);
-        $this->updatePokemonFromDTO($pokemon, $dto);
-        
-        $this->pokemonRepository->save($pokemon, true);
-        return $pokemon;
+        try {
+            $response = $this->httpClient->request('GET', $this->apiBaseUrl . "/pokemon/$id");
+
+            $data = $response->toArray();
+
+            $dto = PokemonDTO::createFromArray($data);
+
+            $pokemon = $this->pokemonRepository->find($id) ?? new Pokemon($id);
+            $this->updatePokemonFromDTO($pokemon, $dto);
+
+            $this->pokemonRepository->save($pokemon, true);
+
+            return $pokemon;
+        } catch (ClientExceptionInterface|RedirectionExceptionInterface|ServerExceptionInterface|TransportExceptionInterface $e) {
+            $this->logger->error(sprintf(
+                'Erreur lors de la récupération du Pokémon #%d : %s',
+                $id,
+                $e->getMessage()
+            ));
+
+            throw new \RuntimeException(sprintf(
+                'Impossible de récupérer les informations du Pokémon #%d. Veuillez réessayer plus tard.',
+                $id
+            ));
+        }
     }
 
     private function updatePokemonFromDTO(Pokemon $pokemon, PokemonDTO $dto): void

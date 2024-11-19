@@ -20,6 +20,9 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\Service\PokemonService:
+        bind:
+            $apiBaseUrl: '%env(POKEAPI_BASE_URL)%'
 
 
     # add more service definitions when explicit configuration is needed
