@@ -40,7 +40,7 @@ L'objectif est de fournir une interface utilisateur intuitive pour visualiser le
 
 Clonez le dépôt :
 ```sh
-    git clone <U[RL_DU_DEPOT](https://github.com/bensaadmucret/pokedex)>
+    git clone (https://github.com/bensaadmucret/pokedex)
     cd pokedex
 ```
 
