@@ -29,7 +29,7 @@ L'objectif est de fournir une interface utilisateur intuitive pour visualiser le
 - Afficher les informations de chaque Pokémon (nom, image, type(s), taille).
 - Ajouter des fonctionnalités de recherche, tri et filtre par type.
 
-### Création d’un Point d’API pour les Combats (Optionnel)
+### Création d’un Point d’API pour les Combats
 
 - Créer un point d'API custom avec ApiPlatform pour simuler un combat entre deux Pokémons.
 - Définir un algorithme de combat basé sur les caractéristiques des Pokémons.
