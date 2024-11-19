@@ -111,6 +111,27 @@ Supprimer la base de données :
 docker compose exec php bin/console doctrine:database:drop
 ```
 
+## Pour créer et synchroniser les Pokémon :
+
+```sh
+docker compose exec php bin/console app:sync-pokemon
+```
+## Pour spécifier des options :
+
+```sh
+docker compose exec php bin/console app:sync-pokemon --from=1 --to=100 --batch-size=20
+
+from : L'ID de départ du Pokémon à synchroniser. Par défaut, 1.
+to   : L'ID de fin du Pokémon à synchroniser.
+batch-size : Le nombre de Pokémon à traiter en parallèle. Par défaut, 10.
+```
+
+## Un script shell pour automatiser l'exécution de la commande
+### Pour exécuter le script avec des options :
+```sh
+./sync_pokemon.sh 1 100 20
+```
+
 
 ### Commandes Makefile
 
