@@ -38,32 +38,78 @@ L'objectif est de fournir une interface utilisateur intuitive pour visualiser le
 
 ## Installation
 
-1. Clonez le dépôt :
+Clonez le dépôt :
     ```sh
     git clone <URL_DU_DEPOT>
     cd <NOM_DU_PROJET>
     ```
 
-2. Construisez et démarrez les conteneurs Docker :
+Construisez et démarrez les conteneurs Docker :
     ```sh
     docker compose build --no-cache
     docker compose up --pull always -d --wait
 
     ```
-3. Installez les dépendances :
+Installez les dépendances :
     ```sh
     docker compose exec php composer install
-    ```
-4. Créez les tables de la base de données :
-    ```sh
-    docker compose exec php bin/console doctrine:schema:create
     ```
 Pour arrêter les conteneurs Docker :
     ```sh
     docker compose down --remove-orphans
     ```
+## Gestion de la Base de Données avec Doctrine
 
+### Créer la base de données
 ## Utilisation
+
+```sh
+docker compose exec php bin/console doctrine:database:create
+```
+
+Pour créer les tables de la base de données :
+
+```sh
+docker compose exec php bin/console doctrine:schema:create
+```
+
+Générer une migration
+
+```sh
+docker compose exec php bin/console make:migration
+- OU
+docker compose exec php bin/console doctrine:migrations:diff
+```
+
+Appliquer les migrations
+
+```sh
+docker compose exec php bin/console doctrine:migrations:migrate
+```
+Vérifier le statut des migrations
+
+```sh
+docker compose exec php bin/console doctrine:migrations:status
+```
+
+Pour mettre à jour les tables de la base de données :
+
+```sh
+docker compose exec php bin/console doctrine:schema:update --force
+```
+
+Supprimer les tables de la base de données :
+
+```sh
+docker compose exec php bin/console doctrine:schema:drop
+```
+
+Supprimer la base de données :
+
+```sh
+docker compose exec php bin/console doctrine:database:drop
+```
+
 
 ### Commandes Makefile
 
