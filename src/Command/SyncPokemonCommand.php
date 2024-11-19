@@ -29,7 +29,8 @@ class SyncPokemonCommand extends Command
         $this
             ->addOption('from', null, InputOption::VALUE_REQUIRED, 'Starting Pokemon ID', 1)
             ->addOption('to', null, InputOption::VALUE_REQUIRED, 'Ending Pokemon ID', 151)
-            ->addOption('batch-size', null, InputOption::VALUE_REQUIRED, 'Number of Pokemon to process in parallel', 10);
+            ->addOption('batch-size', null, InputOption::VALUE_REQUIRED, 'Number of Pokemon to process in parallel', 10)
+            ->addOption('count', null, InputOption::VALUE_REQUIRED, 'Number of random Pokemon to fetch', 100);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -38,13 +39,13 @@ class SyncPokemonCommand extends Command
         $from = (int) $input->getOption('from');
         $to = (int) $input->getOption('to');
         $batchSize = (int) $input->getOption('batch-size');
+        $count = (int) $input->getOption('count');
 
-        $io->progressStart($to - $from + 1);
+        if ($input->getOption('count')) {
+            $randomIds = $this->pokemonService->generateRandomPokemonIds($count);
+            $io->progressStart($count);
 
-        for ($i = $from; $i <= $to; $i += $batchSize) {
-            $batch = range($i, min($i + $batchSize - 1, $to));
-            
-            foreach ($batch as $id) {
+            foreach ($randomIds as $id) {
                 try {
                     $this->pokemonService->fetchAndSavePokemon($id);
                     $io->progressAdvance();
@@ -52,8 +53,23 @@ class SyncPokemonCommand extends Command
                     $io->error("Error processing Pokemon #$id: " . $e->getMessage());
                 }
             }
-        
-            usleep(1000000); 
+        } else {
+            $io->progressStart($to - $from + 1);
+
+            for ($i = $from; $i <= $to; $i += $batchSize) {
+                $batch = range($i, min($i + $batchSize - 1, $to));
+
+                foreach ($batch as $id) {
+                    try {
+                        $this->pokemonService->fetchAndSavePokemon($id);
+                        $io->progressAdvance();
+                    } catch (\Exception $e) {
+                        $io->error("Error processing Pokemon #$id: " . $e->getMessage());
+                    }
+                }
+
+                usleep(1000000);
+            }
         }
 
         $io->progressFinish();

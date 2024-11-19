@@ -56,6 +56,18 @@ class PokemonService
         }
     }
 
+    public function generateRandomPokemonIds(int $count = 100, int $minId = 1, int $maxId = 898): array
+    {
+        $ids = [];
+        while (count($ids) < $count) {
+            $id = random_int($minId, $maxId);
+            if (!in_array($id, $ids)) {
+                $ids[] = $id;
+            }
+        }
+        return $ids;
+    }
+
     private function updatePokemonFromDTO(Pokemon $pokemon, PokemonDTO $dto): void
     {
         $pokemon
@@ -77,4 +89,6 @@ class PokemonService
             ->setSprites($dto->sprites)
             ->updateTimestamp();
     }
+
+
 }

@@ -118,6 +118,11 @@ docker compose exec php bin/console app:sync-pokemon
 ```
 ## Pour spécifier des options :
 
+**Avec l'option --count : La commande récupère et sauvegarde le nombre spécifié de Pokémons aléatoires.**
+
+```sh
+docker compose exec php bin/console app:sync-pokemon --count=100
+```
 ```sh
 docker compose exec php bin/console app:sync-pokemon --from=1 --to=100 --batch-size=20
 
