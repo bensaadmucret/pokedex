@@ -27,6 +27,12 @@ class PokemonService
     ) {
     }
 
+    /**
+     * Récupère un Pokémon à partir de son ID et l'enregistre dans la base de données
+     *
+     * @param integer $id
+     * @return Pokemon|null
+     */
     public function fetchAndSavePokemon(int $id): ?Pokemon
     {
         try {
@@ -56,6 +62,14 @@ class PokemonService
         }
     }
 
+    /**
+     * Génère un tableau d'ID de Pokémon aléatoires
+     *
+     * @param integer $count
+     * @param integer $minId
+     * @param integer $maxId
+     * @return array
+     */
     public function generateRandomPokemonIds(int $count = 100, int $minId = 1, int $maxId = 898): array
     {
         $ids = [];
@@ -68,6 +82,13 @@ class PokemonService
         return $ids;
     }
 
+    /**
+     * Met à jour un Pokémon à partir d'un DTO
+     *
+     * @param Pokemon $pokemon
+     * @param PokemonDTO $dto
+     * @return void
+     */
     private function updatePokemonFromDTO(Pokemon $pokemon, PokemonDTO $dto): void
     {
         $pokemon

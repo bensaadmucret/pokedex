@@ -33,7 +33,12 @@ class PokemonList
         private readonly PokemonService $pokemonService,
         private readonly PokemonRepository $pokemonRepository,
     ) {}
-
+    
+    /**
+     * Retourne les types de Pokémon disponibles
+     *
+     * @return array    
+     */
     public function getPokemonTypes(): array
     {
         return [
@@ -93,7 +98,9 @@ class PokemonList
     }
 
    
-
+    /**
+     * Inverse la direction de tri
+     */
     public function toggleSort(): void
     {
         $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';

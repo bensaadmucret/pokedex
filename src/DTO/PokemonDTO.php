@@ -24,10 +24,6 @@ readonly class PokemonDTO
                 'example' => 1
             ]
         )]
-        #[Assert\LessThanOrEqual(
-            value: 100,
-            message: 'L\'identifiant du Pokemon ne peut pas dépasser 100.'
-        )]
         public int $id,
 
         #[Assert\NotBlank]

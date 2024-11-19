@@ -67,7 +67,11 @@ class SyncPokemonCommand extends Command
                         $io->error("Error processing Pokemon #$id: " . $e->getMessage());
                     }
                 }
-
+                /**
+                 * Utilisation de la fonction usleep() pour ajouter un délai entre chaque appel
+                 * à la méthode fetchAndSavePokemon(). Cela permet de réduire le temps de
+                 * récupération des données de Pokémon et de les stocker dans la base de données.
+                 */    
                 usleep(1000000);
             }
         }

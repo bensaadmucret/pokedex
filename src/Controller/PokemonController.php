@@ -8,11 +8,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
-class PokemonController extends AbstractController
+final class PokemonController extends AbstractController
 {
-
-
-
     #[Route('/', name: 'pokemon_list')]
     #[Template('pokemon/index.html.twig')] 
     public function index(TranslatorInterface $translator): array

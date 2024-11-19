@@ -12,7 +12,14 @@ final readonly class PokemonBattleService
     public function __construct(
         private EntityManagerInterface $entityManager
     ) {}
-
+    
+    /**
+     * Simule un combat entre deux Pokémons
+     *
+     * @param integer $pokemon1Id
+     * @param integer $pokemon2Id
+     * @return array
+     */
     public function simulateBattle(int $pokemon1Id, int $pokemon2Id): array
     {
         $pokemon1 = $this->fetchPokemon($pokemon1Id);
@@ -41,14 +48,22 @@ final readonly class PokemonBattleService
         ];
     }
 
+    /**
+     * Récupère un Pokémon à partir de son ID
+     *
+     * @param integer $pokemonId
+     * @return Pokemon|null
+     */
     private function fetchPokemon(int $pokemonId): ?Pokemon
     {
         return $this->entityManager->getRepository(Pokemon::class)->find($pokemonId);
     }
 
+    /**
+     * @return int[]
+     */
     private function calculateScore(Pokemon $pokemon): int
     {
-        // somme des statistiques de base (attaque, défense, expérience)
         return $pokemon->getHp() + $pokemon->getAttack() + $pokemon->getDefense();
     }
 }
