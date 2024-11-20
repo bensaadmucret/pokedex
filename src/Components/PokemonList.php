@@ -4,10 +4,10 @@ namespace App\Components;
 
 use App\Entity\Pokemon;
 use App\Repository\PokemonRepository;
-use App\Service\PokemonService;
-use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 use Symfony\UX\LiveComponent\Attribute\LiveProp;
 use Symfony\UX\LiveComponent\DefaultActionTrait;
+use Symfony\UX\LiveComponent\Attribute\LiveAction;
+use Symfony\UX\LiveComponent\Attribute\AsLiveComponent;
 
 #[AsLiveComponent('pokemon_list')]
 class PokemonList
@@ -27,18 +27,15 @@ class PokemonList
     public string $sortDirection = 'asc';
 
     #[LiveProp]
-    public int $limit = 151;
+    public int $limit = 20;
+
+    #[LiveProp(writable: true)]
+    public int $page = 1;
 
     public function __construct(
-        private readonly PokemonService $pokemonService,
         private readonly PokemonRepository $pokemonRepository,
     ) {}
     
-    /**
-     * Retourne les types de Pokémon disponibles
-     *
-     * @return array    
-     */
     public function getPokemonTypes(): array
     {
         return [
@@ -48,11 +45,19 @@ class PokemonList
         ];
     }
 
-
     /**
-     * @return Pokemon[]
+     * @return array<Pokemon>
      */
     public function getPokemons(): array
+    {
+      return $this->getFilteredAndSortedPokemons();
+        
+    }
+
+    /**
+     * @return array<Pokemon>
+     */
+    private function getFilteredAndSortedPokemons(): array
     {
         $pokemons = $this->pokemonRepository->findAllOptimized();
 
@@ -60,13 +65,10 @@ class PokemonList
         if (!empty($this->query)) {
             $pokemons = array_filter($pokemons, function(Pokemon $pokemon) {
                 return str_contains(
-                    strtolower($pokemon->getName()), 
+                    strtolower($pokemon->getName()),
                     strtolower($this->query)
                 );
             });
-            if (empty($pokemons)) {
-                $pokemons = [];
-            }
         }
 
         // Filtrage par type
@@ -97,12 +99,17 @@ class PokemonList
         return array_values($pokemons);
     }
 
-   
-    /**
-     * Inverse la direction de tri
-     */
-    public function toggleSort(): void
+
+
+    
+
+    public function getPaginationInfo(): array
     {
-        $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
+        $totalPokemons = count($this->getFilteredAndSortedPokemons());
+        
+        return [
+            'totalItems' => $totalPokemons,
+            
+        ];
     }
 }

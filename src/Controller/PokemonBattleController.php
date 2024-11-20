@@ -6,7 +6,6 @@ namespace App\Controller;
 
 use App\DTO\PokemonBattleInput;
 use App\Service\PokemonBattleService;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpKernel\Attribute\AsController;
