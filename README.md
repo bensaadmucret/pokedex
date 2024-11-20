@@ -41,7 +41,7 @@ L'objectif est de fournir une interface utilisateur intuitive pour visualiser le
 Clonez le dépôt :
 ```sh
     git clone (https://github.com/bensaadmucret/pokedex)
-    cd pokedex
+    cd pokedex/symfony-docker
 ```
 
 Construisez et démarrez les conteneurs Docker :
